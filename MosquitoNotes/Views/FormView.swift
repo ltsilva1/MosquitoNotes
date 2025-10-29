@@ -9,29 +9,59 @@ import SwiftUI
 
 struct FormView: View {
     @State private var nome = ""
-    @State private var quantidade = ""
-    @State private var idade = ""
-    @State private var umidade = ""
+    @State private var dataHora = ""
     @State private var local = ""
+    @State private var umidade = ""
+    @State private var temperatura = ""
+    @State private var modeloCelular = ""
+    @State private var quantidade = ""
+    @State private var especie = ""
+    @State private var genero = ""
+    @State private var container = ""
+    @State private var idade = ""
+    @State private var acasalando = ""
+    @State private var metodoCriacao = ""
+    @State private var luminosidade = ""
     @State private var observacoes = ""
     
     @StateObject private var viewModel = NotaViewModel()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("🦟 Anotações de Gravação")
+            Text("Anotações de Gravação")
                 .font(.largeTitle)
                 .bold()
+                .frame(maxWidth: .infinity, alignment: .center)
             
-            Form {
-                TextField("Nome da gravação:", text: $nome)
-                TextField("Quantidade de mosquitos:", text: $quantidade)
-                TextField("Idade (dias):", text: $idade)
-                TextField("Umidade (%):", text: $umidade)
-                TextField("Local (latitude e longitude):", text: $local)
-                Text("Observações adicionais:")
-                TextEditor(text: $observacoes)
-                    .frame(height: 100)
+            Form() {
+                Section {
+                    TextField("Nome da gravação:", text: $nome)
+                    TextField("Data e hora:", text: $dataHora)
+                    TextField("Umidade (%):", text: $umidade)
+                    TextField("Temperatura (°C):", text: $temperatura)
+                    TextField("Local (latitude e longitude):", text: $local)
+                    TextField("Modelo do celular:", text: $modeloCelular)
+                    TextField("Quantidade de mosquitos:", text: $quantidade)
+                    TextField("Espécie:", text: $especie)
+                    TextField("Genero:", text: $genero)
+                    TextField("Container:", text: $container)
+                }
+            
+                Section {
+                    TextField("Idade (dias):", text: $idade)
+                    Picker(selection: $acasalando, label: Text("Acasalando?")) {
+                        Text("Sim").tag("Sim")
+                        Text("Não").tag("Não")
+                    }
+                    .pickerStyle(.radioGroup)
+                    .horizontalRadioGroupLayout()
+                    TextField("Método de criação:", text: $metodoCriacao)
+                    TextField("Luminosidade do ambiente:", text: $luminosidade)
+                    
+                    Text("Observações adicionais:")
+                    TextEditor(text: $observacoes)
+                        .frame(height: 100)
+                }
             }
             
             HStack(spacing: 12) {
@@ -47,7 +77,7 @@ struct FormView: View {
                 }
                 .buttonStyle(.bordered)
                             
-                Button("Adicionar anotação") {
+                Button("Adicionar nota") {
                     let nota = criarNota()
                     viewModel.adicionarAnotacao(nota)
                     limparCampos()
@@ -77,28 +107,46 @@ struct FormView: View {
                         }
         }
         .padding()
-        .frame(width: 420, height: 500)
+        .frame(width: 600, height: 700)
     }
     
     private func criarNota() -> Nota {
             Nota(
-                nome: nome.isEmpty ? "Gravação sem nome" : nome,
+                nome: nome.isEmpty ? "Sem nome" : nome,
+                dataHora: dataHora,
+                modeloCelular: modeloCelular,
+                especie: especie,
+                genero: genero,
+                container: container,
                 quantidade: quantidade,
                 idade: idade,
                 umidade: umidade,
+                temperatura: temperatura,
+                luminosidade: luminosidade,
                 local: local,
+                acasalando: acasalando,
+                metodoCriacao: metodoCriacao,
                 observacoes: observacoes
             )
     }
     
     private func limparCampos() {
         nome = ""
-        quantidade = ""
-        idade = ""
+        dataHora = ""
+        // local = ""
         umidade = ""
-        local = ""
+        // modeloCelular = ""
+        quantidade = ""
+        // especie = ""
+        genero = ""
+        // container = ""
+        idade = ""
+        acasalando = ""
+        metodoCriacao = ""
+        // luminosidade = ""
         observacoes = ""
     }
+    
 }
 
 

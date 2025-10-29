@@ -13,10 +13,8 @@ final class NotaViewModel: ObservableObject {
     @Published var status = ""
     @Published var arquivoAtual: URL? = nil
     
-    // MARK: - Cria nova anotação
+
     func criarNovoArquivo(_ nota: Nota) {
-        let bloco = formatarNota(nota)
-        
         let savePanel = NSSavePanel()
         savePanel.title = "Criar novo arquivo"
         savePanel.nameFieldStringValue = "notas.md"
@@ -24,7 +22,7 @@ final class NotaViewModel: ObservableObject {
         
         if savePanel.runModal() == .OK, let url = savePanel.url {
             do {
-                try bloco.write(to: url, atomically: true, encoding: .utf8)
+                try "".write(to: url, atomically: true, encoding: .utf8) // arq vazio
                 arquivoAtual = url
                 status = "Novo arquivo criado: \(url.lastPathComponent)"
             } catch {
@@ -33,7 +31,7 @@ final class NotaViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Abre arquivo existente
+
     func abrirArquivo() {
         let openPanel = NSOpenPanel()
         openPanel.title = "Selecionar arquivo existente"
@@ -45,8 +43,8 @@ final class NotaViewModel: ObservableObject {
             status = "Arquivo aberto: \(url.lastPathComponent)"
         }
     }
-    
-    // MARK: - Adiciona anotação ao arquivo atual
+
+
     func adicionarAnotacao(_ nota: Nota) {
         guard let url = arquivoAtual else {
             status = "Nenhum arquivo aberto!"
@@ -73,16 +71,26 @@ final class NotaViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Formatação Markdown
+
     private func formatarNota(_ nota: Nota) -> String {
         """
         ### Gravação - \(nota.nome)
+        - Data e hora: \(nota.dataHora)
+        - Latitude e longitude: \(nota.local)
+        - Temperatura e umidade: \(nota.temperatura)°C, \(nota.umidade)%
+        - Marca / modelo do celular: \(nota.modeloCelular)
         - Quantidade de mosquitos: \(nota.quantidade)
-        - Idade: \(nota.idade)
-        - Umidade: \(nota.umidade)%
-        - Local: \(nota.local)
-        - Observações: \(nota.observacoes)
+        - Espécie dos mosquitos: \(nota.especie)
+        - Gênero dos mosquitos: \(nota.genero)
+        - Container utilizado: \(nota.container)
+        - Idade dos mosquitos: \(nota.idade)
+        - Acasalamento: \(nota.acasalando)
+        - Método de criação: \(nota.metodoCriacao)
+        - Luminosidade do ambiente: \(nota.luminosidade)
+        - Outros dados / observações: \(nota.observacoes)
         
+        ---\n
         """
     }
+
 }

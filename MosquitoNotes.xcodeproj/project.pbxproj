@@ -17,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C53667E2EB1C07400FE456B /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		1C53667F2EB1C17600FE456B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1CE683412EAEB2BA0031359B /* MosquitoNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MosquitoNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CE683442EAEB2BA0031359B /* MosquitoNotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosquitoNotesApp.swift; sourceTree = "<group>"; };
 		1CE683462EAEB2BA0031359B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -66,6 +68,8 @@
 				1CE683482EAEB2C20031359B /* Assets.xcassets */,
 				1CE6834D2EAEB2C20031359B /* MosquitoNotes.entitlements */,
 				1CE6834A2EAEB2C20031359B /* Preview Content */,
+				1C53667E2EB1C07400FE456B /* LICENSE */,
+				1C53667F2EB1C17600FE456B /* README.md */,
 			);
 			path = MosquitoNotes;
 			sourceTree = "<group>";
