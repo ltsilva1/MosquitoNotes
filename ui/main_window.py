@@ -8,6 +8,7 @@ class MosquitoNotesApp:
     def __init__(self, root):
         root.title("Mosquito Notes - Versão em Python")
         root.geometry("600x700")
+        root.resizable(False, False)
 
         mainframe = ttk.Frame(root, padding="10 10 10 10")
         mainframe.grid(row=0, column=0, sticky=(N, W, E, S))
