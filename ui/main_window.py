@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from models.nota import Nota
+from services.excel_export import salvar_nota_excel
 from . import layout
 
 class MosquitoNotesApp:
@@ -36,109 +37,45 @@ class MosquitoNotesApp:
         layout.criar_botoes(self, mainframe)
         layout.criar_barra_de_status(self, mainframe)
 
-    # mesma lógica do ViewModel do swift
     def adicionar_nota(self):
         if not self.arquivo_atual:
             self.status_var.set("Nenhum arquivo aberto!")
             return
-
-        # pega os dados das StringVars 
-        nome_str = self.nome_var.get() or "Sem nome"
-        data_str = self.dataHora_var.get()          
-        idade_str = self.idade_var.get()            
-        obs_str = self.observacoes_text.get("1.0", "end-1c")
-        modelo_str = self.modeloCelular_var.get()
-        especie_str = self.especie_var.get()
-        genero_str = self.genero_var.get()
-        container_str = self.container_var.get()
-        quantidade_str = self.quantidade_var.get()
-        umidade_str = self.umidade_var.get()
-        temperatura_str = self.temperatura_var.get()
-        luminosidade_str = self.luminosidade_var.get()
-        local_str = self.local_var.get()
-        acasalando_str = self.acasalando_var.get()
-        metodoCriacao_str = self.metodoCriacao_var.get()
         
-        nova_nota = Nota(
-            nome=nome_str,
-            dataHora=data_str,
-            idade=idade_str,
-            observacoes=obs_str,
-            modeloCelular=modelo_str,
-            especie=especie_str,
-            genero=genero_str,
-            container=container_str,
-            quantidade=quantidade_str,
-            umidade=umidade_str,
-            temperatura=temperatura_str,
-            luminosidade=luminosidade_str,
-            local=local_str,
-            acasalando=acasalando_str,
-            metodoCriacao=metodoCriacao_str
+        nova_nota = Nota( # tava sendo imbecil aqui
+            nome=self.nome_var.get() or "Sem nome",
+            dataHora=self.dataHora_var.get(),
+            idade=self.idade_var.get(),
+            observacoes=self.observacoes_text.get("1.0", "end-1c"),
+            modeloCelular=self.modeloCelular_var.get(),
+            especie=self.especie_var.get(),
+            genero=self.genero_var.get(),
+            container=self.container_var.get(),
+            quantidade=self.quantidade_var.get(),
+            umidade=self.umidade_var.get(),
+            temperatura=self.temperatura_var.get(),
+            luminosidade=self.luminosidade_var.get(),
+            local=self.local_var.get(),
+            acasalando=self.acasalando_var.get(),
+            metodoCriacao=self.metodoCriacao_var.get()
         )
 
-        bloco_formatado = self.formatar_nota(nova_nota)
         try:
-            with open(self.arquivo_atual, "a", encoding="utf-8") as f:
-                f.write(bloco_formatado)
+            sucesso, erro_msg = salvar_nota_excel(nova_nota, self.arquivo_atual)
             
-            filename = self.arquivo_atual.split('/')[-1]
-            self.status_var.set(f"Anotação adicionada em {filename}")
-            self.limpar_campos()
+            if sucesso:
+                filename = self.arquivo_atual.split('/')[-1]
+                self.status_var.set(f"Anotação adicionada em {filename}")
+                self.limpar_campos()
+            else:
+                raise Exception(erro_msg)
+                
         except Exception as e:
             self.status_var.set(f"Erro ao adicionar: {e}")
-            messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar a nota no arquivo:\n{e}")
-
-    def formatar_nota(self, nota: Nota) -> str:
-        return f""" ### Gravação - {nota.nome}
-- Data e hora: {nota.dataHora}
-- Latitude e longitude: {nota.local}
-- Temperatura e umidade: {nota.temperatura}°C, {nota.umidade}%
-- Marca / modelo do celular: {nota.modeloCelular}
-- Quantidade de mosquitos: {nota.quantidade}
-- Espécie dos mosquitos: {nota.especie}
-- Gênero dos mosquitos: {nota.genero}
-- Container utilizado: {nota.container}
-- Idade dos mosquitos: {nota.idade}
-- Acasalamento: {nota.acasalando}
-- Método de criação: {nota.metodoCriacao}
-- Luminosidade do ambiente: {nota.luminosidade}
-- Outros dados / observações: {nota.observacoes}
-
----\n
-"""
-
-    def limpar_campos(self):
-        self.nome_var.set("")
-        #self.dataHora_var.set("")
-        #self.idade_var.set("")
-        self.observacoes_text.delete("1.0", "end")
-        #self.modeloCelular_var.set("")
-        #self.especie_var.set("")
-        self.genero_var.set("")
-        #self.container_var.set("")
-        self.quantidade_var.set("")
-        #self.umidade_var.set("")
-        #self.temperatura_var.set("")
-        #self.luminosidade_var.set("")
-        #self.local_var.set("")
-        #self.acasalando_var.set("")
-        #self.metodoCriacao_var.set("")
-
-
-    def abrir_arquivo(self):
-        filepath = filedialog.askopenfilename(
-            title="Selecionar arquivo existente",
-            filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
-        )
-        if not filepath:
-            return
-        
-        self.arquivo_atual = filepath
-        filename = filepath.split('/')[-1]
-        self.status_var.set(f"Arquivo aberto: {filename}")
-        self.add_button.config(state="normal") # habilita o botão de adicionar nota agora
-
+            messagebox.showerror("Erro ao Salvar",
+                                 f"Verifique se o arquivo não está aberto por outro programa.\n\n" # erro mais comum
+                                 f"Erro: {e}")
+            
     def criar_novo_arquivo(self):
         filepath = filedialog.asksaveasfilename(
             title="Criar novo arquivo",
@@ -160,3 +97,123 @@ class MosquitoNotesApp:
         except Exception as e:
             self.status_var.set(f"Erro ao criar: {e}")
             messagebox.showerror("Erro ao Criar", f"Não foi possível criar o arquivo:\n{e}")
+
+    def limpar_campos(self):
+        self.nome_var.set("")
+        #self.dataHora_var.set("")
+        #self.idade_var.set("")
+        self.observacoes_text.delete("1.0", "end")
+        #self.modeloCelular_var.set("")
+        #self.especie_var.set("")
+        self.genero_var.set("")
+        #self.container_var.set("")
+        self.quantidade_var.set("")
+        #self.umidade_var.set("")
+        #self.temperatura_var.set("")
+        #self.luminosidade_var.set("")
+        #self.local_var.set("")
+        #self.acasalando_var.set("")
+        #self.metodoCriacao_var.set("")
+
+    def abrir_arquivo(self):
+        """
+        Função ATIVA: Abre um arquivo Excel.
+        """
+        filepath = filedialog.askopenfilename(
+            title="Selecionar planilha Excel",
+            filetypes=[("Planilhas Excel", "*.xlsx"), ("Todos os arquivos", "*.*")]
+        )
+        if not filepath:
+            return
+        
+        self.arquivo_atual = filepath
+        filename = filepath.split('/')[-1]
+        self.status_var.set(f"Arquivo aberto: {filename}")
+        self.add_button.config(state="normal")
+
+    def criar_novo_arquivo(self):
+        filepath = filedialog.asksaveasfilename(
+            title="Criar nova planilha Excel",
+            initialfile="notas_mosquitos.xlsx",
+            defaultextension=".xlsx",
+            filetypes=[("Planilhas Excel", "*.xlsx"), ("Todos os arquivos", "*.*")]
+        )
+        if not filepath:
+            return
+            
+        try:
+            self.arquivo_atual = filepath
+            filename = filepath.split('/')[-1]
+            self.status_var.set(f"Nova planilha pronta: {filename}")
+            self.add_button.config(state="normal") 
+        except Exception as e:
+            self.status_var.set(f"Erro ao definir caminho: {e}")
+            messagebox.showerror("Erro", f"Erro: {e}")
+
+    # mesma lógica do ViewModel do swift
+    def adicionar_nota_txt(self):
+        if not self.arquivo_atual:
+            self.status_var.set("Nenhum arquivo aberto!")
+            return
+        
+        nova_nota = Nota(
+            nome=self.nome_var.get() or "Sem nome",
+            dataHora=self.dataHora_var.get(),
+            idade=self.idade_var.get(),
+            observacoes=self.observacoes_text.get("1.0", "end-1c"),
+            modeloCelular=self.modeloCelular_var.get(),
+            especie=self.especie_var.get(),
+            genero=self.genero_var.get(),
+            container=self.container_var.get(),
+            quantidade=self.quantidade_var.get(),
+            umidade=self.umidade_var.get(),
+            temperatura=self.temperatura_var.get(),
+            luminosidade=self.luminosidade_var.get(),
+            local=self.local_var.get(),
+            acasalando=self.acasalando_var.get(),
+            metodoCriacao=self.metodoCriacao_var.get()
+        )
+
+        bloco_formatado = self.formatar_nota(nova_nota)
+        try:
+            with open(self.arquivo_atual, "a", encoding="utf-8") as f:
+                f.write(bloco_formatado)
+            
+            filename = self.arquivo_atual.split('/')[-1]
+            self.status_var.set(f"Anotação adicionada em {filename}")
+            self.limpar_campos()
+        except Exception as e:
+            self.status_var.set(f"Erro ao adicionar: {e}")
+            messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar a nota no arquivo:\n{e}")
+
+    def abrir_arquivo_txt(self):
+        filepath = filedialog.askopenfilename(
+            title="Selecionar arquivo existente",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
+        )
+        if not filepath:
+            return
+        
+        self.arquivo_atual = filepath
+        filename = filepath.split('/')[-1]
+        self.status_var.set(f"Arquivo aberto: {filename}")
+        self.add_button.config(state="normal") # habilita o botão de adicionar nota agora
+
+    def formatar_nota(self, nota: Nota) -> str:
+        return f""" ### Gravação - {nota.nome}
+- Data e hora: {nota.dataHora}
+- Latitude e longitude: {nota.local}
+- Temperatura e umidade: {nota.temperatura}°C, {nota.umidade}%
+- Marca / modelo do celular: {nota.modeloCelular}
+- Quantidade de mosquitos: {nota.quantidade}
+- Espécie dos mosquitos: {nota.especie}
+- Gênero dos mosquitos: {nota.genero}
+- Container utilizado: {nota.container}
+- Idade dos mosquitos: {nota.idade}
+- Acasalamento: {nota.acasalando}
+- Método de criação: {nota.metodoCriacao}
+- Luminosidade do ambiente: {nota.luminosidade}
+- Outros dados / observações: {nota.observacoes}
+
+---\n
+"""
