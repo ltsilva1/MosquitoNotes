@@ -6,12 +6,12 @@ Permite registrar informações como idade, umidade, método de criação e obse
 Esta é uma reescrita da [versão original em Swift](https://github.com/ltsilva1/MosquitoNotes/tree/swiftui-old), agora focada em ser multiplataforma e exportar dados diretamente para planilhas.
 
 ## Uso
-    ```bash
+```bash
     git clone https://github.com/ltsilva1/MosquitoNotes.git
     cd MosquitoNotes
     pip install pandas openpyxl
     python main.py
-    ```
+```
 1.  Com o app aberto, clique em **"Novo arquivo"** para criar sua planilha `.xlsx` ou em **"Abrir arquivo"** para selecionar uma existente.
 2.  Preencha os campos de anotação.
 3.  Clique em **"Adicionar nota"**.
